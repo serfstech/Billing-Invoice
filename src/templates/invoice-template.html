@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Invoice</title>
+    <link rel="stylesheet" href="../css/invoice.css">
+    <style>
+        /* Invoice-specific styles */
+        .invoice-container {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 20mm;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .company-info {
+            flex: 2;
+        }
+        
+        .invoice-info {
+            flex: 1;
+            text-align: right;
+        }
+        
+        .company-logo {
+            max-width: 150px;
+            max-height: 80px;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            color: #2196f3;
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        
+        h2 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .invoice-details {
+            margin: 30px 0;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-section {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .detail-section h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .detail-item {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .detail-item strong {
+            min-width: 120px;
+        }
+        
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+        
+        .invoice-table th {
+            background: #2196f3;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .invoice-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .invoice-table tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .totals-section {
+            margin-top: 30px;
+            text-align: right;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+            min-width: 300px;
+            margin-left: auto;
+        }
+        
+        .total-label {
+            flex: 1;
+            text-align: right;
+            padding-right: 20px;
+        }
+        
+        .total-value {
+            min-width: 150px;
+            text-align: right;
+        }
+        
+        .grand-total {
+            font-size: 18px;
+            font-weight: bold;
+            border-top: 2px solid #333;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        
+        .invoice-footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .terms-section {
+            margin-bottom: 30px;
+        }
+        
+        .signature-section {
+            text-align: right;
+        }
+        
+        .signature-line {
+            width: 200px;
+            height: 1px;
+            background: #333;
+            margin: 20px auto 5px;
+        }
+        
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            color: rgba(0,0,0,0.1);
+            z-index: -1;
+            font-weight: bold;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            
+            .invoice-container {
+                box-shadow: none;
+                padding: 15mm;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .watermark.draft {
+                display: block;
+            }
+            
+            @page {
+                margin: 0;
+                size: A4 portrait;
+            }
+        }
+        
+        /* Status colors */
+        .status-paid .invoice-header {
+            border-bottom-color: #4caf50;
+        }
+        
+        .status-pending .invoice-header {
+            border-bottom-color: #ff9800;
+        }
+        
+        .status-overdue .invoice-header {
+            border-bottom-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container" id="invoiceContainer">
+        <!-- Watermark for draft invoices -->
+        <div class="watermark draft" id="watermark" style="display: none;">DRAFT</div>
+        
+        <!-- Invoice Header -->
+        <div class="invoice-header">
+            <div class="company-info">
+                <img src="../assets/logo.png" alt="Company Logo" class="company-logo" id="companyLogo">
+                <h2 id="companyName">Distributor Company</h2>
+                <p id="companyAddress">123 Business Street, City, State - 123456</p>
+                <p id="companyContact">Phone: +91 9876543210 | GST: 27ABCDE1234F1Z5</p>
+            </div>
+            <div class="invoice-info">
+                <h1>TAX INVOICE</h1>
+                <p><strong>Invoice No:</strong> <span id="invoiceNumber">INV-0001</span></p>
+                <p><strong>Date:</strong> <span id="invoiceDate">01 Jan 2024</span></p>
+                <p><strong>Due Date:</strong> <span id="dueDate">31 Jan 2024</span></p>
+                <p><strong>Status:</strong> <span id="invoiceStatus">Pending</span></p>
+            </div>
+        </div>
+        
+        <!-- Invoice Details -->
+        <div class="invoice-details">
+            <div class="details-grid">
+                <div class="detail-section">
+                    <h3><i class="material-icons">person</i> Bill To</h3>
+                    <div class="detail-item">
+                        <strong>Name:</strong> <span id="customerName">Customer Name</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Phone:</strong> <span id="customerPhone">+91 9876543210</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>GST No:</strong> <span id="customerGST">27ABCDE1234F1Z5</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Address:</strong> <span id="customerAddress">Customer Address Line 1, City, State</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h3><i class="material-icons">payments</i> Payment Details</h3>
+                    <div class="detail-item">
+                        <strong>Payment Method:</strong> <span id="paymentMethod">Cash</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Payment Status:</strong> <span id="paymentStatus">Pending</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Amount Paid:</strong> <span id="amountPaid">₹0.00</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Balance Due:</strong> <span id="balanceDue">₹0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Invoice Items Table -->
+        <table class="invoice-table" id="invoiceItemsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Product Description</th>
+                    <th>HSN/SAC</th>
+                    <th>Qty</th>
+                    <th>Unit</th>
+                    <th>Rate (₹)</th>
+                    <th>GST %</th>
+                    <th>Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody id="invoiceItemsBody">
+                <!-- Items will be populated by JavaScript -->
+            </tbody>
+        </table>
+        
+        <!-- Invoice Totals -->
+        <div class="totals-section">
+            <div class="total-row">
+                <div class="total-label">Subtotal:</div>
+                <div class="total-value" id="subtotal">₹0.00</div>
+            </div>
+            <div class="total-row">
+                <div class="total-label">Total GST:</div>
+                <div class="total-value" id="totalGST">₹0.00</div>
+            </div>
+            <div class="total-row grand-total">
+                <div class="total-label">Grand Total:</div>
+                <div class="total-value" id="grandTotal">₹0.00</div>
+            </div>
+            <div class="total-row">
+                <div class="total-label">Amount Paid:</div>
+                <div class="total-value" id="totalPaid">₹0.00</div>
+            </div>
+            <div class="total-row">
+                <div class="total-label">Balance Due:</div>
+                <div class="total-value" id="totalDue">₹0.00</div>
+            </div>
+        </div>
+        
+        <!-- Invoice Footer -->
+        <div class="invoice-footer">
+            <div class="terms-section">
+                <h3>Terms & Conditions:</h3>
+                <p>1. Goods once sold will not be taken back.</p>
+                <p>2. Interest @18% p.a. will be charged on overdue payments.</p>
+                <p>3. Subject to City Jurisdiction.</p>
+                <p id="invoiceNotes" style="margin-top: 10px; font-style: italic;"></p>
+            </div>
+            
+            <div class="signature-section">
+                <p>For <span id="companyNameFooter">Distributor Company</span></p>
+                <div class="signature-line"></div>
+                <p>Authorized Signatory</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Print/Download buttons (hidden during printing) -->
+    <div class="no-print" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button onclick="window.print()" style="padding: 10px 20px; background: #2196f3; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+            <i class="material-icons" style="vertical-align: middle; margin-right: 5px;">print</i> Print
+        </button>
+        <button onclick="downloadPDF()" style="padding: 10px 20px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            <i class="material-icons" style="vertical-align: middle; margin-right: 5px;">download</i> Download PDF
+        </button>
+    </div>
+    
+    <script>
+        // This script will be populated with invoice data from the main application
+        function populateInvoice(data) {
+            // Company Information
+            document.getElementById('companyName').textContent = data.company.name || 'Distributor Company';
+            document.getElementById('companyAddress').textContent = data.company.address || '123 Business Street, City, State - 123456';
+            document.getElementById('companyContact').textContent = data.company.contact || 'Phone: +91 9876543210 | GST: 27ABCDE1234F1Z5';
+            document.getElementById('companyNameFooter').textContent = data.company.name || 'Distributor Company';
+            
+            // Invoice Information
+            document.getElementById('invoiceNumber').textContent = data.invoice.number;
+            document.getElementById('invoiceDate').textContent = formatDate(data.invoice.date);
+            document.getElementById('dueDate').textContent = data.invoice.dueDate ? formatDate(data.invoice.dueDate) : 'N/A';
+            document.getElementById('invoiceStatus').textContent = data.invoice.status;
+            
+            // Customer Information
+            document.getElementById('customerName').textContent = data.customer.name;
+            document.getElementById('customerPhone').textContent = data.customer.phone || 'N/A';
+            document.getElementById('customerGST').textContent = data.customer.gst || 'N/A';
+            document.getElementById('customerAddress').textContent = data.customer.address || 'N/A';
+            
+            // Payment Information
+            document.getElementById('paymentMethod').textContent = data.payment.method || 'Not specified';
+            document.getElementById('paymentStatus').textContent = data.payment.status;
+            document.getElementById('amountPaid').textContent = formatCurrency(data.payment.paid);
+            document.getElementById('balanceDue').textContent = formatCurrency(data.payment.due);
+            
+            // Invoice Items
+            const itemsBody = document.getElementById('invoiceItemsBody');
+            itemsBody.innerHTML = '';
+            
+            data.items.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.description}</td>
+                    <td>${item.hsn || 'N/A'}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unit || 'pcs'}</td>
+                    <td>${formatCurrency(item.rate)}</td>
+                    <td>${item.gst}%</td>
+                    <td>${formatCurrency(item.amount)}</td>
+                `;
+                itemsBody.appendChild(row);
+            });
+            
+            // Totals
+            document.getElementById('subtotal').textContent = formatCurrency(data.totals.subtotal);
+            document.getElementById('totalGST').textContent = formatCurrency(data.totals.gst);
+            document.getElementById('grandTotal').textContent = formatCurrency(data.totals.grandTotal);
+            document.getElementById('totalPaid').textContent = formatCurrency(data.totals.paid);
+            document.getElementById('totalDue').textContent = formatCurrency(data.totals.due);
+            
+            // Notes
+            if (data.invoice.notes) {
+                document.getElementById('invoiceNotes').textContent = `Notes: ${data.invoice.notes}`;
+            }
+            
+            // Watermark for draft status
+            if (data.invoice.status === 'Draft') {
+                document.getElementById('watermark').style.display = 'block';
+            }
+            
+            // Apply status class for styling
+            const container = document.getElementById('invoiceContainer');
+            container.className = 'invoice-container';
+            container.classList.add(`status-${data.invoice.status.toLowerCase()}`);
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                minimumFractionDigits: 2
+            }).format(amount);
+        }
+        
+        function downloadPDF() {
+            // This would use a PDF generation library
+            // For now, just trigger print
+            window.print();
+        }
+        
+        // Sample data for testing
+        const sampleData = {
+            company: {
+                name: "ABC Distributors",
+                address: "456 Trade Center, Mumbai, Maharashtra - 400001",
+                contact: "Phone: +91 9876543210 | GST: 27ABCDE1234F1Z5"
+            },
+            invoice: {
+                number: "INV-2024-00123",
+                date: "2024-01-15",
+                dueDate: "2024-02-14",
+                status: "Pending",
+                notes: "Thank you for your business!"
+            },
+            customer: {
+                name: "XYZ Retail Store",
+                phone: "+91 9876543211",
+                gst: "27ABCDE1234F1Z6",
+                address: "123 Market Street, Mumbai, Maharashtra - 400002"
+            },
+            payment: {
+                method: "Bank Transfer",
+                status: "Pending",
+                paid: 0,
+                due: 15000
+            },
+            items: [
+                {
+                    description: "Premium Rice 5kg",
+                    hsn: "1006",
+                    quantity: 10,
+                    unit: "bags",
+                    rate: 800,
+                    gst: 5,
+                    amount: 8400
+                },
+                {
+                    description: "Wheat Flour 10kg",
+                    hsn: "1101",
+                    quantity: 5,
+                    unit: "bags",
+                    rate: 600,
+                    gst: 5,
+                    amount: 3150
+                },
+                {
+                    description: "Sugar 5kg",
+                    hsn: "1701",
+                    quantity: 8,
+                    unit: "bags",
+                    rate: 250,
+                    gst: 18,
+                    amount: 2360
+                }
+            ],
+            totals: {
+                subtotal: 12500,
+                gst: 1410,
+                grandTotal: 13910,
+                paid: 0,
+                due: 13910
+            }
+        };
+        
+        // Populate with sample data for preview
+        // In production, this would be called with actual data
+        // populateInvoice(sampleData);
+    </script>
+</body>
+</html>

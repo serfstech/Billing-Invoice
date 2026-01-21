@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributor Invoice & Inventory System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="../assets/logo.png" alt="Company Logo" class="logo">
+                <h1>Distributor Invoice System</h1>
+                <p>Professional Offline Inventory Management</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="material-icons">person</i> Username
+                    </label>
+                    <input type="text" id="username" name="username" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="password">
+                        <i class="material-icons">lock</i> Password
+                    </label>
+                    <input type="password" id="password" name="password" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="material-icons">login</i> Login
+                </button>
+                <div class="login-footer">
+                    <p>Default: admin / admin123</p>
+                    <p class="version">v1.0.0</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="appContainer" class="app-container hidden">
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <div class="nav-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="material-icons">menu</i>
+                </button>
+                <div class="logo-container">
+                    <img src="../assets/logo.png" alt="Logo" class="nav-logo">
+                    <span class="app-title">Distributor System</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="nav-item" id="notificationBell">
+                    <i class="material-icons">notifications</i>
+                    <span class="badge" id="notificationCount">0</span>
+                </div>
+                <div class="nav-item" id="darkModeToggle">
+                    <i class="material-icons">dark_mode</i>
+                </div>
+                <div class="nav-item" id="userMenu">
+                    <i class="material-icons">account_circle</i>
+                    <span id="usernameDisplay">Admin</span>
+                    <i class="material-icons dropdown-arrow">arrow_drop_down</i>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-page="dashboard">
+                    <i class="material-icons">dashboard</i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-page="suppliers">
+                    <i class="material-icons">business</i>
+                    <span>Suppliers</span>
+                </div>
+                <div class="menu-item" data-page="customers">
+                    <i class="material-icons">people</i>
+                    <span>Customers</span>
+                </div>
+                <div class="menu-item" data-page="products">
+                    <i class="material-icons">inventory_2</i>
+                    <span>Products</span>
+                </div>
+                <div class="menu-item" data-page="purchases">
+                    <i class="material-icons">add_shopping_cart</i>
+                    <span>Purchases</span>
+                </div>
+                <div class="menu-item" data-page="sales">
+                    <i class="material-icons">point_of_sale</i>
+                    <span>Sales / Billing</span>
+                </div>
+                <div class="menu-item" data-page="invoices">
+                    <i class="material-icons">receipt</i>
+                    <span>Invoices</span>
+                </div>
+                <div class="menu-item" data-page="stock">
+                    <i class="material-icons">warehouse</i>
+                    <span>Stock Management</span>
+                </div>
+                <div class="menu-item" data-page="reports">
+                    <i class="material-icons">assessment</i>
+                    <span>Reports</span>
+                </div>
+                <div class="menu-item" data-page="settings">
+                    <i class="material-icons">settings</i>
+                    <span>Settings</span>
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <i class="material-icons status-icon">wifi_off</i>
+                    <span>Offline Mode</span>
+                </div>
+                <button class="btn btn-sm btn-outline" id="logoutBtn">
+                    <i class="material-icons">logout</i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Content will be dynamically loaded here -->
+        </main>
+
+        <!-- Notification Panel -->
+        <div class="notification-panel" id="notificationPanel">
+            <div class="notification-header">
+                <h3>Notifications</h3>
+                <button class="btn btn-sm btn-text" id="markAllRead">
+                    Mark all as read
+                </button>
+            </div>
+            <div class="notification-list" id="notificationList">
+                <!-- Notifications will be loaded here -->
+            </div>
+        </div>
+
+        <!-- User Menu Dropdown -->
+        <div class="user-menu-dropdown" id="userMenuDropdown">
+            <div class="user-info">
+                <i class="material-icons">account_circle</i>
+                <div>
+                    <strong id="dropdownUsername">Admin</strong>
+                    <small>Administrator</small>
+                </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item" data-action="profile">
+                <i class="material-icons">person</i> My Profile
+            </a>
+            <a href="#" class="dropdown-item" data-action="backup">
+                <i class="material-icons">backup</i> Backup Database
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item" data-action="logout">
+                <i class="material-icons">logout</i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Modal Container -->
+    <div id="modalContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+</body>
+</html>

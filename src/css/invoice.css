@@ -1,0 +1,267 @@
+/* Invoice Template Styles */
+.invoice-template {
+    background: white;
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #333;
+}
+
+.company-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.invoice-logo {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.company-info h2 {
+    margin: 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.company-info p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.invoice-title {
+    text-align: right;
+}
+
+.invoice-title h1 {
+    margin: 0;
+    color: #2196f3;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.invoice-title p {
+    margin: 5px 0 0 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.invoice-details {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.detail-column {
+    flex: 1;
+    min-width: 300px;
+}
+
+.detail-column h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.detail-column p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.detail-table {
+    width: 100%;
+}
+
+.detail-table tr td {
+    padding: 5px 0;
+    color: #555;
+}
+
+.detail-table tr td:first-child {
+    font-weight: 600;
+    width: 150px;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 30px 0;
+    border: 1px solid #ddd;
+}
+
+.items-table thead {
+    background: #2196f3;
+    color: white;
+}
+
+.items-table th {
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    border: 1px solid #ddd;
+}
+
+.items-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.items-table tbody tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+.invoice-totals {
+    margin: 30px 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.total-table {
+    width: 300px;
+    border-collapse: collapse;
+}
+
+.total-table tr td {
+    padding: 10px;
+    text-align: right;
+    border-bottom: 1px solid #ddd;
+}
+
+.total-table tr:last-child td {
+    border-bottom: none;
+}
+
+.total-table .grand-total {
+    background: #2196f3;
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.total-table .grand-total td {
+    padding: 15px 10px;
+}
+
+.invoice-footer {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 2px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.terms {
+    flex: 2;
+}
+
+.terms h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.terms p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 12px;
+}
+
+.signature {
+    text-align: center;
+    flex: 1;
+}
+
+.signature p {
+    margin: 0 0 20px 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.signature-line {
+    width: 200px;
+    height: 1px;
+    background: #333;
+    margin: 0 auto;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+    
+    .invoice-template {
+        box-shadow: none;
+        padding: 20px;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+    
+    .invoice-header {
+        page-break-inside: avoid;
+    }
+    
+    .items-table {
+        page-break-inside: avoid;
+    }
+    
+    .invoice-footer {
+        page-break-inside: avoid;
+    }
+}
+
+/* Watermark for draft invoices */
+.invoice-draft .invoice-template::before {
+    content: "DRAFT";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 120px;
+    color: rgba(0,0,0,0.1);
+    z-index: -1;
+    font-weight: 700;
+}
+
+/* Paid invoice styling */
+.invoice-paid .invoice-header {
+    border-bottom-color: #4caf50;
+}
+
+.invoice-paid .invoice-title h1 {
+    color: #4caf50;
+}
+
+/* Overdue invoice styling */
+.invoice-overdue .invoice-header {
+    border-bottom-color: #f44336;
+}
+
+.invoice-overdue .invoice-title h1 {
+    color: #f44336;
+}
